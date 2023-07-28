@@ -32,6 +32,7 @@ export default function App() {
   const handleSubmitGenerate = useCallback(async () => {
     if (apikey === "") {
       toast.error("Please enter your OpenAI apikey");
+      return;
     }
 
     if (frameworks.length === 0) {
