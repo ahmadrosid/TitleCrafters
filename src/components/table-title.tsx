@@ -7,6 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Copy } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 type CsvData = { head: string[]; rows: string[][] };
 
@@ -42,7 +43,13 @@ export function TableTitle({ data }: { data: any[] }) {
               {cells.map((cell: string, cellIdx: number) => (
                 <TableCell className="group relative" key={cellIdx}>
                   <p className="py-1">{cell}</p>
-                  <button className="absolute invisible group-hover:visible right-1 top-1">
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(cell);
+                      toast.success("Copied to clipboard");
+                    }}
+                    className="absolute invisible group-hover:visible right-1 top-1"
+                  >
                     <Copy className="w-4" />
                   </button>
                 </TableCell>
