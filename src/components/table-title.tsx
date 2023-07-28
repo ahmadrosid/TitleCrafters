@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Copy } from "lucide-react";
 
 type CsvData = { head: string[]; rows: string[][] };
 
@@ -39,7 +40,12 @@ export function TableTitle({ data }: { data: any[] }) {
           {csv.rows.map((cells: string[], idx: number) => (
             <TableRow key={idx}>
               {cells.map((cell: string, cellIdx: number) => (
-                <TableCell key={cellIdx}>{cell}</TableCell>
+                <TableCell className="group relative" key={cellIdx}>
+                  <p className="py-1">{cell}</p>
+                  <button className="absolute invisible group-hover:visible right-1 top-1">
+                    <Copy className="w-4" />
+                  </button>
+                </TableCell>
               ))}
             </TableRow>
           ))}

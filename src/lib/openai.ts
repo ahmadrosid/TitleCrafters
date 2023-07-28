@@ -1,6 +1,6 @@
 import { Result } from "./result";
 
-type Message = {
+export type Message = {
   role: "system" | "user" | "assistant";
   content: string;
 };
@@ -8,6 +8,7 @@ type Message = {
 export type ChatProps = {
   apikey: string;
   body: RequestBody;
+  controller: AbortController;
 };
 
 export type RequestBody = {
@@ -47,6 +48,7 @@ export async function fetchChat(
       Authorization: `Bearer ${props.apikey}`,
     },
     body: JSON.stringify(props.body),
+    signal: props.controller.signal,
   };
 
   return fetch("https://api.openai.com/v1/chat/completions", options)

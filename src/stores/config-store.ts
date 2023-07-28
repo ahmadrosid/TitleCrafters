@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import merge from "lodash.merge";
+import { Message } from "@/lib/openai";
+import { CopyFramework } from "@/lib/frameworks";
 
 export type Idea = {
   title: string;
@@ -20,6 +22,8 @@ interface ConfigStore {
   model: OptionModel;
   temperature: number;
   results: any[];
+  style: Message;
+  frameworks: CopyFramework[];
 }
 
 const storeKey = "config_store";
@@ -34,6 +38,11 @@ const defaultInitialState: ConfigStore = {
   model: "gpt-4",
   temperature: 0.0,
   results: [],
+  style: {
+    role: "system",
+    content: "",
+  },
+  frameworks: [],
 };
 
 export const useConfigStore = create<ConfigStore>()(
@@ -43,7 +52,15 @@ export const useConfigStore = create<ConfigStore>()(
 );
 
 export function deserializeStore(json: string): ConfigStore {
-  const store: ConfigStore = merge(defaultInitialState, JSON.parse(json));
+  const store = merge(defaultInitialState, JSON.parse(json));
+  if (store.frameworks.length > 0) {
+    if (!store.frameworks[0].label) {
+      // migrate old format
+      store.frameworks = store.frameworks.map((framework: any) => {
+        return { label: framework, description: "" };
+      });
+    }
+  }
   return store;
 }
 
@@ -110,5 +127,17 @@ export function setTemperature(temperature: number) {
 export function setResults(results: any[]) {
   useConfigStore.setState((state) => {
     state.results = results;
+  });
+}
+
+export function setStyle(content: string) {
+  useConfigStore.setState((state) => {
+    state.style = { ...state.style, content };
+  });
+}
+
+export function setFrameworks(frameworks: CopyFramework[]) {
+  useConfigStore.setState((state) => {
+    state.frameworks = frameworks;
   });
 }

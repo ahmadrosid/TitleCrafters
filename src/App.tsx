@@ -2,13 +2,6 @@ import { useCallback, useState } from "react";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
-import {
-  setApikey,
-  setIdea,
-  setResults,
-  setTemperature,
-  useConfigStore,
-} from "./stores/config-store";
 import toast from "react-hot-toast";
 import { fetchChat } from "./lib/openai";
 import { SelectModel } from "./components/select-model";
@@ -16,39 +9,69 @@ import { Slider } from "./components/ui/slider";
 import { isError } from "./lib/result";
 import { Loader2 } from "lucide-react";
 import { TableTitle } from "./components/table-title";
-function App() {
-  const { apikey, idea, temperature, model, results } = useConfigStore(
-    (state) => state
-  );
+import {
+  setApikey,
+  setIdea,
+  setResults,
+  setStyle,
+  setTemperature,
+  useConfigStore,
+} from "./stores/config-store";
+import { SelectFrameworks } from "./components/select-frameworks";
 
-  const [loading, setLoading] = useState(false);
+export default function App() {
+  const { apikey, idea, temperature, model, results, style, frameworks } =
+    useConfigStore((state) => state);
+
+  const [controller, setController] = useState<AbortController | null>(null);
+
+  const abortChat = useCallback(() => {
+    controller?.abort();
+  }, [controller]);
 
   const handleSubmitGenerate = useCallback(async () => {
     if (apikey === "") {
       toast.error("Please enter your OpenAI apikey");
     }
 
-    setLoading(true);
+    if (frameworks.length === 0) {
+      toast.error("Please select at least one framework");
+      return;
+    }
+
     setResults([]);
+    const controller = new AbortController();
+    setController(controller);
 
     const resultChat = await fetchChat({
       apikey: apikey,
+      controller: controller,
       body: {
         model: model,
         temperature: temperature,
         messages: [
           {
             role: "system",
-            content: `Generate title about "${idea.title}" with copywriting frameworks AIDA, PAS, BAB, 4 P's. Please use bahasa ${idea.language}.`,
+            content: `Selected frameworks: \n${frameworks
+              .map((item) => item.label + " : " + item.description)
+              .join("\n")}}`,
+          },
+          {
+            role: "system",
+            content: "Writing style: " + style.content,
+          },
+          {
+            role: "system",
+            content: `Generate title using selected frameworks and writing style. Please use language ${idea.language}. Format in csv with column Framework, Title`,
           },
           {
             role: "user",
-            content: "Please generate title in csv format.",
+            content: idea.title,
           },
         ],
       },
     });
-    setLoading(false);
+    setController(null);
 
     if (isError(resultChat)) {
       toast.error(resultChat.message);
@@ -61,7 +84,15 @@ function App() {
     }
 
     setResults([resultChat.choices[0].message.content]);
-  }, [apikey, model, temperature, idea.title, idea.language]);
+  }, [
+    apikey,
+    frameworks,
+    model,
+    temperature,
+    idea.title,
+    idea.language,
+    style.content,
+  ]);
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -111,9 +142,29 @@ function App() {
               type="text"
               placeholder="Enter Language"
             />
-            <Button onClick={handleSubmitGenerate}>
-              {loading ? <Loader2 className="animate-spin w-4 mr-2" /> : null}
-              Generate
+            <div className="grid grid-cols-2 gap-2">
+              <SelectFrameworks />
+              <Input
+                defaultValue={style.content}
+                onChange={(e) => setStyle(e.target.value)}
+                type="text"
+                placeholder="Writing style"
+              />
+            </div>
+            <Button
+              onClick={() => {
+                if (controller === null) handleSubmitGenerate();
+                else abortChat();
+              }}
+            >
+              {controller ? (
+                <>
+                  <Loader2 className="animate-spin w-4 mr-2" />
+                  Stop
+                </>
+              ) : (
+                "Generate"
+              )}
             </Button>
           </div>
           <div className="p-4">
@@ -124,5 +175,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
