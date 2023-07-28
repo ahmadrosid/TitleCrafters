@@ -13,12 +13,15 @@ type CsvData = { head: string[]; rows: string[][] };
 
 function parseToData(input: string): CsvData {
   const lines = input.split("\n");
-  const head = lines.shift()?.replace(/"/g, "").split(",") || [];
+  const head =
+    lines
+      .shift()
+      ?.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+      .map((item) => item.replace(/"/g, "")) || [];
   const rows = lines.map((line) =>
     line
-      .replace(/^"|"$/g, "")
-      .split('","')
-      .map((item) => item.replace(/""/g, '"'))
+      .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+      .map((item) => item.replace(/"/g, "").replace(/""/g, '"'))
   );
 
   return { head, rows };
