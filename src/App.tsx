@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Button } from "./components/ui/button";
+import { Button, buttonVariants } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import toast from "react-hot-toast";
@@ -18,6 +18,8 @@ import {
   useConfigStore,
 } from "./stores/config-store";
 import { SelectFrameworks } from "./components/select-frameworks";
+import { GithubIcon } from "./components/github-icon";
+import { cn } from "./lib/utils";
 
 export default function App() {
   const { apikey, idea, temperature, model, results, style, frameworks } =
@@ -100,6 +102,17 @@ export default function App() {
       <div className="flex">
         <div className="w-full max-w-[260px] p-4 space-y-4">
           <h1 className="text-3xl font-bold">Title Crafters</h1>
+          <a
+            href="https://github.com/ahmadrosid/TitleCrafters"
+            target="_blank"
+            className={cn(
+              buttonVariants({ variant: "link" }),
+              "px-0 gap-2 w-full justify-start"
+            )}
+          >
+            <GithubIcon className="text-black w-4" />
+            <span>Free opensource</span>
+          </a>
           <div className="space-y-1">
             <Label>OpenAI apikey</Label>
             <Input
