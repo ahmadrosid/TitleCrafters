@@ -20,6 +20,7 @@ import {
 import { SelectFrameworks } from "./components/select-frameworks";
 import { GithubIcon } from "./components/github-icon";
 import { cn } from "./lib/utils";
+import { SelectTone } from "./components/select-tone";
 
 export default function App() {
   const { apikey, idea, temperature, model, results, style, frameworks } =
@@ -144,26 +145,33 @@ export default function App() {
         </div>
         <div className="flex-1">
           <div className="p-4 space-y-2">
+            <Label>What is your idea?</Label>
             <Input
               defaultValue={idea.title}
               onChange={(e) => setIdea({ ...idea, title: e.target.value })}
               type="text"
               placeholder="Enter your general idea"
             />
-            <Input
-              defaultValue={idea.language}
-              onChange={(e) => setIdea({ ...idea, language: e.target.value })}
-              type="text"
-              placeholder="Enter Language"
-            />
-            <div className="grid grid-cols-2 gap-2">
-              <SelectFrameworks />
-              <Input
-                defaultValue={style.content}
-                onChange={(e) => setStyle(e.target.value)}
-                type="text"
-                placeholder="Writing style"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="grid gap-1 pt-1">
+                <Label>Frameworks</Label>
+                <SelectFrameworks />
+              </div>
+              <div>
+                <Label>Language</Label>
+                <Input
+                  defaultValue={idea.language}
+                  onChange={(e) =>
+                    setIdea({ ...idea, language: e.target.value })
+                  }
+                  type="text"
+                  placeholder="Enter Language"
+                />
+              </div>
+              <div>
+                <Label>Tone</Label>
+                <SelectTone onValueChange={setStyle} />
+              </div>
             </div>
             <Button
               onClick={() => {
