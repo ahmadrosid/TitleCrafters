@@ -7,12 +7,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useConfigStore } from "@/stores/config-store";
 
 export function SelectTone({
   onValueChange,
 }: {
   onValueChange: (value: string) => void;
 }) {
+  const selectedValue = useConfigStore((state) => state.style);
   const options = [
     "Professional",
     "Academic",
@@ -21,7 +23,7 @@ export function SelectTone({
     "Storytelling",
   ];
   return (
-    <Select onValueChange={onValueChange}>
+    <Select onValueChange={onValueChange} defaultValue={selectedValue.content}>
       <SelectTrigger className="w-full">
         <SelectValue placeholder="Select tone" />
       </SelectTrigger>
