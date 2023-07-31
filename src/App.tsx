@@ -10,6 +10,7 @@ import { isError } from "@/lib/result";
 import { Loader2, Trash2Icon } from "lucide-react";
 import { TableTitle } from "@/components/table-title";
 import {
+  newIdea,
   removeTitle,
   setActiveId,
   setApikey,
@@ -24,6 +25,7 @@ import { SelectTone } from "./components/select-tone";
 import { Footer } from "./components/footer";
 import { Header } from "./components/header";
 import { cn } from "./lib/utils";
+import { PlusCircle } from "lucide-react";
 
 export default function App() {
   const { titles, activeId, apikey, temperature, model, rightbarView, data } =
@@ -118,6 +120,14 @@ export default function App() {
       <div className="bg-gray-50 min-h-[92dvh]">
         <div className="flex">
           <div className="w-full max-w-[260px] p-4 space-y-4">
+            <Button
+              onClick={newIdea}
+              size="sm"
+              className="w-full justify-between"
+            >
+              New Idea
+              <PlusCircle className="w-4 h-4 mr-l" />
+            </Button>
             <div className="space-y-1">
               <Label>OpenAI apikey</Label>
               <Input

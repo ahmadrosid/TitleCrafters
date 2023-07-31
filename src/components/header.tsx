@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { GithubIcon } from "@/components/github-icon";
-import { PanelRight, PlusCircle } from "lucide-react";
-import { newIdea, toggleRightbarView } from "@/stores/config-store";
+import { PanelRight } from "lucide-react";
+import { toggleRightbarView } from "@/stores/config-store";
 
 export function Header() {
   return (
@@ -11,9 +11,6 @@ export function Header() {
         <div className="mr-4 hidden md:flex">
           <nav className="flex items-center space-x-6 text-sm font-medium">
             <p className="font-bold">Title Crafters</p>
-            <Button onClick={newIdea} size="sm">
-              <PlusCircle className="w-4 h-4 mr-2" /> New Idea
-            </Button>
           </nav>
         </div>
 
