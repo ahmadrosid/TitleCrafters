@@ -20,6 +20,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { frameworks } from "@/lib/frameworks";
 import { useConfigStore, setFrameworks } from "@/stores/config-store";
+import { Label } from "./ui/label";
 
 export function SelectFrameworks() {
   const { selectedValues, activeId } = useConfigStore((state) => {
@@ -90,7 +91,7 @@ export function SelectFrameworks() {
                 const isSelected = selectedValues.has(option.label);
                 return (
                   <CommandItem
-                    key={option.label}
+                    key={option.label + option.description}
                     onSelect={() => {
                       if (isSelected) {
                         selectedValues.delete(option.label);
@@ -115,7 +116,12 @@ export function SelectFrameworks() {
                     >
                       <CheckIcon className={cn("h-4 w-4")} />
                     </div>
-                    <span>{option.label}</span>
+                    <div className="max-w-xl">
+                      <Label>{option.label}</Label>
+                      <p className="text-gray-600 truncate">
+                        {option.description}
+                      </p>
+                    </div>
                   </CommandItem>
                 );
               })}
