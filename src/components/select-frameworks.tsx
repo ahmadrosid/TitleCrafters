@@ -25,7 +25,9 @@ export function SelectFrameworks() {
   const { selectedValues, activeId } = useConfigStore((state) => {
     return {
       selectedValues: new Set(
-        state.titles.get(state.activeId)?.frameworks || []
+        state.titles
+          .get(state.activeId)
+          ?.frameworks.map((item) => item.label) || []
       ),
       activeId: state.activeId,
     };
@@ -62,7 +64,7 @@ export function SelectFrameworks() {
                   </Badge>
                 ) : (
                   frameworks
-                    .filter((option) => selectedValues.has(option))
+                    .filter((option) => selectedValues.has(option.label))
                     .map((option) => (
                       <Badge
                         variant="secondary"
@@ -85,17 +87,22 @@ export function SelectFrameworks() {
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {frameworks.map((option) => {
-                const isSelected = selectedValues.has(option);
+                const isSelected = selectedValues.has(option.label);
                 return (
                   <CommandItem
                     key={option.label}
                     onSelect={() => {
                       if (isSelected) {
-                        selectedValues.delete(option);
+                        selectedValues.delete(option.label);
                       } else {
-                        selectedValues.add(option);
+                        selectedValues.add(option.label);
                       }
-                      setFrameworks(activeId, Array.from(selectedValues));
+                      setFrameworks(
+                        activeId,
+                        frameworks.filter((item) =>
+                          selectedValues.has(item.label)
+                        )
+                      );
                     }}
                   >
                     <div
