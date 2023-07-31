@@ -147,7 +147,7 @@ export default function App() {
               />
             </div>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 overflow-y-auto max-h-[92dvh]">
             <div className="p-4 space-y-2">
               <Label>What is your idea?</Label>
               <Input
