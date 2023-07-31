@@ -11,10 +11,14 @@ import { useConfigStore } from "@/stores/config-store";
 
 export function SelectTone({
   onValueChange,
+  activeId,
 }: {
+  activeId: string;
   onValueChange: (value: string) => void;
 }) {
-  const selectedValue = useConfigStore((state) => state.style);
+  const selectedValue = useConfigStore((state) => {
+    return state.titles.get(activeId)?.style || { content: "" };
+  });
   const options = [
     "Professional",
     "Academic",

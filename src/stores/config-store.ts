@@ -15,28 +15,33 @@ export type OptionIdea = Idea & {
 
 export type OptionModel = "gpt-3.5-turbo" | "gpt-4";
 
-interface ConfigStore {
-  apikey: string;
+export type TitleStore = {
+  name: string;
   idea: Idea;
   suggestions: OptionIdea[];
-  model: OptionModel;
-  temperature: number;
   results: any[];
   style: Message;
   frameworks: CopyFramework[];
+};
+
+interface ConfigStore {
+  titles: Map<string, TitleStore>;
+  apikey: string;
+  model: OptionModel;
+  temperature: number;
+  activeId: string;
+  rightbarView: boolean;
 }
 
 const storeKey = "config_store";
 const localStoreJson = window.localStorage.getItem(storeKey);
-const defaultInitialState: ConfigStore = {
-  apikey: "",
+const initialTitles: TitleStore = {
+  name: "",
   idea: {
     title: "",
     language: "",
   },
   suggestions: [],
-  model: "gpt-4",
-  temperature: 0.0,
   results: [],
   style: {
     role: "system",
@@ -45,22 +50,65 @@ const defaultInitialState: ConfigStore = {
   frameworks: [],
 };
 
+const titles = new Map<string, TitleStore>();
+titles.set(crypto.randomUUID(), initialTitles);
+const defaultInitialState: ConfigStore = {
+  titles,
+  apikey: "",
+  model: "gpt-4",
+  temperature: 0.0,
+  activeId: "",
+  rightbarView: false,
+};
+
 export const useConfigStore = create<ConfigStore>()(
   immer(() =>
     localStoreJson ? deserializeStore(localStoreJson) : defaultInitialState
   )
 );
 
-export function deserializeStore(json: string): ConfigStore {
-  const store = merge(defaultInitialState, JSON.parse(json));
-  if (store.frameworks.length > 0) {
-    if (!store.frameworks[0].label) {
-      // migrate old format
-      store.frameworks = store.frameworks.map((framework: any) => {
-        return { label: framework, description: "" };
-      });
+function reviver(key: string, value: any): any {
+  if (key === "titles" && Array.isArray(value)) {
+    return new Map(
+      value.map(([id, chatbot]) => {
+        return [id, chatbot];
+      })
+    );
+  }
+  if (typeof value === "object" && value !== null) {
+    if (value.dataType === "Map") {
+      return new Map(value.value);
     }
   }
+  return value;
+}
+
+export function deserializeStore(json: string): ConfigStore {
+  const cache = JSON.parse(json, reviver);
+  const store = merge(defaultInitialState, cache);
+
+  // migrate old format
+  if ("idea" in store) {
+    const id = crypto.randomUUID();
+    if (cache.frameworks.length > 0) {
+      if (!cache.frameworks[0].label) {
+        // migrate old format
+        cache.frameworks = cache.frameworks.map((framework: any) => {
+          return { label: framework, description: "" };
+        });
+      }
+    }
+    delete store.idea;
+    delete store.suggestions;
+    delete store.results;
+    delete store.style;
+    delete store.frameworks;
+    cache.name = cache.idea.title || "";
+    store.titles = new Map<string, TitleStore>();
+    store.titles.set(id, cache);
+    store.activeId = id;
+  }
+
   return store;
 }
 
@@ -86,12 +134,23 @@ window.addEventListener("storage", (event: StorageEvent) => {
   }
 });
 
+function parseMapValue(_key: string, value: any): any {
+  if (value instanceof Map) {
+    return {
+      dataType: "Map",
+      value: Array.from(value.entries()),
+    };
+  } else {
+    return value;
+  }
+}
+
 export function replaceStore(newStore: ConfigStore) {
   useConfigStore.setState(() => newStore);
 }
 
 export function serializeStore(store: ConfigStore): string {
-  return JSON.stringify(store);
+  return JSON.stringify(store, parseMapValue);
 }
 
 export function setApikey(apikey: string) {
@@ -100,15 +159,22 @@ export function setApikey(apikey: string) {
   });
 }
 
-export function setIdea(idea: Idea) {
+export function setIdea(id: string, idea: Idea) {
   useConfigStore.setState((state) => {
-    state.idea = idea;
+    const title = state.titles.get(id);
+    if (title) {
+      title.name = idea.title;
+      title.idea = idea;
+    }
   });
 }
 
-export function setSuggestions(suggestions: OptionIdea[]) {
+export function setSuggestions(id: string, suggestions: OptionIdea[]) {
   useConfigStore.setState((state) => {
-    state.suggestions = suggestions;
+    const title = state.titles.get(id);
+    if (title) {
+      title.suggestions = suggestions;
+    }
   });
 }
 
@@ -124,20 +190,61 @@ export function setTemperature(temperature: number) {
   });
 }
 
-export function setResults(results: any[]) {
+export function setResults(id: string, results: any[]) {
   useConfigStore.setState((state) => {
-    state.results = results;
+    const title = state.titles.get(id);
+    if (title) {
+      title.results = results;
+    }
   });
 }
 
-export function setStyle(content: string) {
+export function setStyle(id: string, content: string) {
   useConfigStore.setState((state) => {
-    state.style = { ...state.style, content };
+    const title = state.titles.get(id);
+    if (title) {
+      title.style = { ...title.style, content };
+    }
   });
 }
 
-export function setFrameworks(frameworks: CopyFramework[]) {
+export function setFrameworks(id: string, frameworks: CopyFramework[]) {
   useConfigStore.setState((state) => {
-    state.frameworks = frameworks;
+    const title = state.titles.get(id);
+    if (title) {
+      title.frameworks = frameworks;
+    }
+  });
+}
+
+export function setActiveId(id: string) {
+  useConfigStore.setState((state) => {
+    state.activeId = id;
+  });
+}
+
+export function newIdea() {
+  useConfigStore.setState((state) => {
+    const id = crypto.randomUUID();
+    state.titles.set(id, initialTitles);
+    state.activeId = id;
+  });
+}
+
+export function removeTitle(id: string) {
+  useConfigStore.setState((state) => {
+    if (!state.titles.get(id)) return;
+    state.titles.delete(id);
+    if (state.titles.size === 0) {
+      state.activeId = "";
+    } else {
+      state.activeId = state.titles.keys().next().value;
+    }
+  });
+}
+
+export function toggleRightbarView() {
+  useConfigStore.setState((state) => {
+    state.rightbarView = !state.rightbarView;
   });
 }

@@ -1,15 +1,17 @@
 import { useCallback, useState } from "react";
-import { Button, buttonVariants } from "./components/ui/button";
-import { Input } from "./components/ui/input";
-import { Label } from "./components/ui/label";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import toast from "react-hot-toast";
-import { fetchChat } from "./lib/openai";
-import { SelectModel } from "./components/select-model";
-import { Slider } from "./components/ui/slider";
-import { isError } from "./lib/result";
-import { Loader2 } from "lucide-react";
-import { TableTitle } from "./components/table-title";
+import { fetchChat } from "@/lib/openai";
+import { SelectModel } from "@/components/select-model";
+import { Slider } from "@/components/ui/slider";
+import { isError } from "@/lib/result";
+import { Loader2, Trash2Icon } from "lucide-react";
+import { TableTitle } from "@/components/table-title";
 import {
+  removeTitle,
+  setActiveId,
   setApikey,
   setIdea,
   setResults,
@@ -18,33 +20,52 @@ import {
   useConfigStore,
 } from "./stores/config-store";
 import { SelectFrameworks } from "./components/select-frameworks";
-import { GithubIcon } from "./components/github-icon";
-import { cn } from "./lib/utils";
 import { SelectTone } from "./components/select-tone";
 import { Footer } from "./components/footer";
+import { Header } from "./components/header";
+import { cn } from "./lib/utils";
 
 export default function App() {
-  const { apikey, idea, temperature, model, results, style, frameworks } =
-    useConfigStore((state) => state);
-
+  const { titles, activeId, apikey, temperature, model, rightbarView, data } =
+    useConfigStore((state) => ({
+      ...state,
+      data: state.titles.get(state.activeId),
+    }));
   const [controller, setController] = useState<AbortController | null>(null);
 
   const abortChat = useCallback(() => {
     controller?.abort();
   }, [controller]);
 
-  const handleSubmitGenerate = useCallback(async () => {
+  const isValidForm = () => {
     if (apikey === "") {
       toast.error("Please enter your OpenAI apikey");
-      return;
+      return false;
     }
 
-    if (frameworks.length === 0) {
+    if (data?.frameworks.length === 0) {
       toast.error("Please select at least one framework");
-      return;
+      return false;
     }
 
-    setResults([]);
+    if (data?.idea.language === "") {
+      toast.error("Please select your prefered language");
+      return false;
+    }
+
+    if (data?.style.content === "") {
+      toast.error("Please select tone");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmitGenerate = useCallback(async () => {
+    // TODO: validate form using zod
+    if (!isValidForm()) return;
+
+    setResults(activeId, []);
     const controller = new AbortController();
     setController(controller);
 
@@ -57,21 +78,21 @@ export default function App() {
         messages: [
           {
             role: "system",
-            content: `Selected frameworks: \n${frameworks
+            content: `Selected frameworks: \n${data?.frameworks
               .map((item) => item.label + " : " + item.description)
               .join("\n")}}`,
           },
           {
             role: "system",
-            content: "Writing style: " + style.content,
+            content: "Writing style: " + data?.style.content,
           },
           {
             role: "system",
-            content: `Generate title using selected frameworks and writing style. Please use language ${idea.language}. Format in csv with column Framework, Title`,
+            content: `Generate title using selected frameworks and writing style. Please use language ${data?.idea.language}. Format in csv with column Framework, Title`,
           },
           {
             role: "user",
-            content: idea.title,
+            content: data?.idea.title || "",
           },
         ],
       },
@@ -88,34 +109,15 @@ export default function App() {
       return;
     }
 
-    setResults([resultChat.choices[0].message.content]);
-  }, [
-    apikey,
-    frameworks,
-    model,
-    temperature,
-    idea.title,
-    idea.language,
-    style.content,
-  ]);
+    setResults(activeId, [resultChat.choices[0].message.content]);
+  }, [apikey, data, model, temperature, activeId]);
 
   return (
     <>
+      <Header />
       <div className="bg-gray-50 min-h-[92dvh]">
         <div className="flex">
           <div className="w-full max-w-[260px] p-4 space-y-4">
-            <h1 className="text-3xl font-bold">Title Crafters</h1>
-            <a
-              href="https://github.com/ahmadrosid/TitleCrafters"
-              target="_blank"
-              className={cn(
-                buttonVariants({ variant: "link" }),
-                "px-0 gap-2 w-full justify-start"
-              )}
-            >
-              <GithubIcon className="text-black w-4" />
-              <span>Free opensource</span>
-            </a>
             <div className="space-y-1">
               <Label>OpenAI apikey</Label>
               <Input
@@ -149,8 +151,13 @@ export default function App() {
             <div className="p-4 space-y-2">
               <Label>What is your idea?</Label>
               <Input
-                defaultValue={idea.title}
-                onChange={(e) => setIdea({ ...idea, title: e.target.value })}
+                value={data?.idea.title}
+                onChange={(e) =>
+                  setIdea(activeId, {
+                    language: data?.idea.language || "",
+                    title: e.target.value,
+                  })
+                }
                 type="text"
                 placeholder="Enter your general idea"
               />
@@ -162,9 +169,12 @@ export default function App() {
                 <div>
                   <Label>Language</Label>
                   <Input
-                    defaultValue={idea.language}
+                    value={data?.idea.language}
                     onChange={(e) =>
-                      setIdea({ ...idea, language: e.target.value })
+                      setIdea(activeId, {
+                        title: data?.idea.title || "",
+                        language: e.target.value,
+                      })
                     }
                     type="text"
                     placeholder="Enter Language"
@@ -172,7 +182,10 @@ export default function App() {
                 </div>
                 <div>
                   <Label>Tone</Label>
-                  <SelectTone onValueChange={setStyle} />
+                  <SelectTone
+                    activeId={activeId}
+                    onValueChange={(val) => setStyle(activeId, val)}
+                  />
                 </div>
               </div>
               <Button
@@ -191,13 +204,40 @@ export default function App() {
                 )}
               </Button>
             </div>
-            <div className="p-4">
-              <TableTitle data={results} />
+            <div className="p-4 min-h-[55dvh]">
+              <TableTitle data={data?.results || []} />
             </div>
+            <Footer />
           </div>
+          {rightbarView && (
+            <div className="w-full max-w-[250px] p-2 space-y-2 bg-white border-l overflow-y-auto max-h-[92dvh]">
+              {Array.from(titles)
+                .reverse()
+                .map(([key, value]) => (
+                  <div
+                    key={key}
+                    onClick={() => setActiveId(key)}
+                    className={cn(
+                      buttonVariants({ variant: "ghost" }),
+                      "w-full justify-between pl-2 pr-0 cursor-pointer"
+                    )}
+                  >
+                    <p className="truncate">
+                      {value.name ? value.name : "Untitled"}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      className="hover:text-red-500"
+                      onClick={() => removeTitle(key)}
+                    >
+                      <Trash2Icon className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+            </div>
+          )}
         </div>
       </div>
-      <Footer />
     </>
   );
 }

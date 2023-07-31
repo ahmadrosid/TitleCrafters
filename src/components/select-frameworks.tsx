@@ -22,7 +22,14 @@ import { frameworks } from "@/lib/frameworks";
 import { useConfigStore, setFrameworks } from "@/stores/config-store";
 
 export function SelectFrameworks() {
-  const selectedValues = useConfigStore((state) => new Set(state.frameworks));
+  const { selectedValues, activeId } = useConfigStore((state) => {
+    return {
+      selectedValues: new Set(
+        state.titles.get(state.activeId)?.frameworks || []
+      ),
+      activeId: state.activeId,
+    };
+  });
 
   return (
     <Popover>
@@ -88,7 +95,7 @@ export function SelectFrameworks() {
                       } else {
                         selectedValues.add(option);
                       }
-                      setFrameworks(Array.from(selectedValues));
+                      setFrameworks(activeId, Array.from(selectedValues));
                     }}
                   >
                     <div
@@ -111,7 +118,7 @@ export function SelectFrameworks() {
                 <CommandSeparator />
                 <CommandGroup>
                   <CommandItem
-                    onSelect={() => setFrameworks([])}
+                    onSelect={() => setFrameworks(activeId, [])}
                     className="justify-center text-center"
                   >
                     Clear filters
