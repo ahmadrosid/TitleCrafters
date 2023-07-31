@@ -37,7 +37,7 @@ export default function App() {
     controller?.abort();
   }, [controller]);
 
-  const isValidForm = () => {
+  const isValidForm = useCallback(() => {
     if (apikey === "") {
       toast.error("Please enter your OpenAI apikey");
       return false;
@@ -59,7 +59,7 @@ export default function App() {
     }
 
     return true;
-  };
+  }, [apikey, data]);
 
   const handleSubmitGenerate = useCallback(async () => {
     // TODO: validate form using zod
@@ -110,7 +110,7 @@ export default function App() {
     }
 
     setResults(activeId, [resultChat.choices[0].message.content]);
-  }, [apikey, data, model, temperature, activeId]);
+  }, [apikey, data, model, temperature, activeId, isValidForm]);
 
   return (
     <>
