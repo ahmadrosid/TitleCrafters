@@ -114,17 +114,16 @@ export const frameworks: CopyFramework[] = [
       "Begin with your strongest benefit Expand on the most important benefit Tell exactly and in detail what they are going to get, including all the features and benefits Back up your statements with support copy Tell them what they’ll lose if they don’t act Sum up the most important benefits Make your call to action. ",
   },
   {
-    label: "The 6+1 model",
+    label: "AIDCA",
     description:
-      "Context, Attention, Desire, The gap, Solution, Call to action and Credibility",
+      "The 6+1 model copywriting formula is a framework that guides the creation of persuasive copy by capturing attention, building interest, creating desire, providing evidence, prompting action, addressing objections, and following up.",
   },
   {
-    label: "UPWORDS Formula",
+    label: "UPWORDS",
     description: "Universal Picture Words Or Relatable, Descriptive Sentences",
   },
   {
-    label: "OATH Formula",
-    description:
-      "The OATH formula is a marketing principle used to categorize prospects' readiness to buy into four stages: Oblivious, Apathetic, Thinking, and Hurting.",
+    label: "OATH",
+    description: "Oblivious, Apathetic, Thinking, or Hurting.",
   },
 ];

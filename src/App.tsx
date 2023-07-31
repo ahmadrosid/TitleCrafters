@@ -80,17 +80,18 @@ export default function App() {
         messages: [
           {
             role: "system",
+            content:
+              "You are healine generator. Generate title using selected frameworks and writing style. Format in csv with column Framework, Title",
+          },
+          {
+            role: "system",
             content: `Selected frameworks: \n${data?.frameworks
               .map((item) => item.label + " : " + item.description)
               .join("\n")}}`,
           },
           {
             role: "system",
-            content: "Writing style: " + data?.style.content,
-          },
-          {
-            role: "system",
-            content: `Generate title using selected frameworks and writing style. Please use language ${data?.idea.language}. Format in csv with column Framework, Title`,
+            content: `Writing style: ${data?.style.content}. Language: ${data?.idea.language}`,
           },
           {
             role: "user",
@@ -120,11 +121,7 @@ export default function App() {
       <div className="bg-gray-50 min-h-[92dvh]">
         <div className="flex">
           <div className="w-full max-w-[260px] p-4 space-y-4">
-            <Button
-              onClick={newIdea}
-              size="sm"
-              className="w-full justify-between"
-            >
+            <Button onClick={newIdea} className="w-full justify-between">
               New Idea
               <PlusCircle className="w-4 h-4 mr-l" />
             </Button>
