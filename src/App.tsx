@@ -26,6 +26,7 @@ import { Footer } from "./components/footer";
 import { Header } from "./components/header";
 import { cn } from "./lib/utils";
 import { PlusCircle } from "lucide-react";
+import { Transition } from "@headlessui/react";
 
 export default function App() {
   const { titles, activeId, apikey, temperature, model, rightbarView, data } =
@@ -211,13 +212,22 @@ export default function App() {
                 )}
               </Button>
             </div>
-            <div className="p-4 min-h-[55dvh]">
+            <div className="p-4 min-h-[58vh]">
               <TableTitle data={data?.results || []} />
             </div>
             <Footer />
           </div>
-          {rightbarView && (
-            <div className="w-full max-w-[250px] p-2 space-y-2 bg-white border-l overflow-y-auto max-h-[92dvh]">
+          <Transition
+            show={rightbarView}
+            enter="transition-all duration-300"
+            enterFrom="-mr-[250px]"
+            enterTo="mr-0"
+            leave="transition-all duration-300"
+            leaveFrom="-mr-0"
+            leaveTo="-mr-[250px]"
+            className="bg-white border-l overflow-y-auto max-w-[250px] "
+          >
+            <div className="w-full p-2 space-y-2">
               {Array.from(titles)
                 .reverse()
                 .map(([key, value]) => (
@@ -242,7 +252,7 @@ export default function App() {
                   </div>
                 ))}
             </div>
-          )}
+          </Transition>
         </div>
       </div>
     </>
