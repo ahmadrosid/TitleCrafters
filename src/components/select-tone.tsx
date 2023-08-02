@@ -25,6 +25,12 @@ export function SelectTone({
     "Casual",
     "Informative",
     "Storytelling",
+    "Academic",
+    "Confident",
+    "Excited",
+    "Formal",
+    "Friendly",
+    "Funny",
   ];
   return (
     <Select onValueChange={onValueChange} defaultValue={selectedValue.content}>
