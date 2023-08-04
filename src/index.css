@@ -76,3 +76,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.sidebar-height {
+  min-height: calc((var(--vh, 1vh) * 100) - 60px);
+  max-height: calc(var(--vh, 1vh) * 92);
+}

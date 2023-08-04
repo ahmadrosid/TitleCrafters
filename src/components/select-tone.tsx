@@ -28,7 +28,7 @@ export function SelectTone({
   ];
   return (
     <Select onValueChange={onValueChange} defaultValue={selectedValue.content}>
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-full bg-white">
         <SelectValue placeholder="Select tone" />
       </SelectTrigger>
       <SelectContent>

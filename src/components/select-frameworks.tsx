@@ -42,9 +42,9 @@ export function SelectFrameworks() {
           size="sm"
           className="h-9 border justify-start"
         >
-          <div className="flex">
+          <div className="flex items-center">
             <PlusCircledIcon className="mr-2 h-4 w-4" />
-            {"Select frameworks"}
+            <p className="truncate">Select frameworks</p>
           </div>
           {selectedValues?.size > 0 && (
             <>

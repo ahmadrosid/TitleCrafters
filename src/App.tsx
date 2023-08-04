@@ -28,8 +28,10 @@ import { Header } from "./components/header";
 import { cn } from "./lib/utils";
 import { PlusCircle } from "lucide-react";
 import { Transition } from "@headlessui/react";
+import useViewportHeight from "./hooks/useViewportHeight";
 
 export default function App() {
+  useViewportHeight();
   const { titles, activeId, apikey, temperature, model, rightbarView, data } =
     useConfigStore((state) => ({
       ...state,
@@ -184,7 +186,7 @@ export default function App() {
                 type="text"
                 placeholder="Enter your general idea"
               />
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 gap-2">
                 <div className="grid gap-1 pt-1">
                   <Label>Frameworks</Label>
                   <SelectFrameworks />
@@ -234,15 +236,15 @@ export default function App() {
           </div>
           <Transition
             show={rightbarView}
-            enter="transition-all duration-300 max-h-[90vh]"
+            enter="transition-all duration-300"
             enterFrom="-mr-[250px]"
             enterTo="mr-0"
-            leave="transition-all duration-300 max-h-[90vh]"
+            leave="transition-all duration-300"
             leaveFrom="-mr-0"
             leaveTo="-mr-[250px]"
             className="bg-white border-l overflow-y-auto max-w-[250px]"
           >
-            <div className="w-full p-2 space-y-2 max-h-[92vh]">
+            <div className="w-full p-2 space-y-2 sidebar-height">
               {Array.from(titles)
                 .reverse()
                 .map(([key, value]) => (
