@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="p-6 text-gray-600 bg-gray-50">
+    <footer className="p-6 text-gray-600">
       Built by{" "}
       <a
         className="underline text-gray-900 hover:text-gray-950"

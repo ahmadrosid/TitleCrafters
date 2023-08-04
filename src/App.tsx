@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +19,7 @@ import {
   setStyle,
   setTemperature,
   useConfigStore,
+  toggleRightbarView,
 } from "./stores/config-store";
 import { SelectFrameworks } from "./components/select-frameworks";
 import { SelectTone } from "./components/select-tone";
@@ -116,10 +117,24 @@ export default function App() {
     setResults(activeId, [resultChat.choices[0].message.content]);
   }, [apikey, data, model, temperature, activeId, isValidForm]);
 
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "\\") {
+        toggleRightbarView();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, []);
+
   return (
     <>
       <Header />
-      <div className="bg-gray-50 min-h-[92dvh]">
+      <div className="max-h-[92dvh]">
         <div className="flex">
           <div className="w-full max-w-[260px] p-4 space-y-4">
             <Button onClick={newIdea} className="w-full justify-between">
@@ -212,22 +227,22 @@ export default function App() {
                 )}
               </Button>
             </div>
-            <div className="p-4 min-h-[58vh]">
+            <div className="p-4">
               <TableTitle data={data?.results || []} />
             </div>
             <Footer />
           </div>
           <Transition
             show={rightbarView}
-            enter="transition-all duration-300"
+            enter="transition-all duration-300 max-h-[90vh]"
             enterFrom="-mr-[250px]"
             enterTo="mr-0"
-            leave="transition-all duration-300"
+            leave="transition-all duration-300 max-h-[90vh]"
             leaveFrom="-mr-0"
             leaveTo="-mr-[250px]"
-            className="bg-white border-l overflow-y-auto max-w-[250px] "
+            className="bg-white border-l overflow-y-auto max-w-[250px]"
           >
-            <div className="w-full p-2 space-y-2">
+            <div className="w-full p-2 space-y-2 max-h-[92vh]">
               {Array.from(titles)
                 .reverse()
                 .map(([key, value]) => (
