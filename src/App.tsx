@@ -138,7 +138,7 @@ export default function App() {
       <Header />
       <div className="max-h-[92dvh]">
         <div className="flex">
-          <div className="w-full max-w-[260px] p-4 space-y-4">
+          <div className="w-full max-w-[16rem] p-4 space-y-4">
             <Button onClick={newIdea} className="w-full justify-between">
               New Idea
               <PlusCircle className="w-4 h-4 mr-l" />
@@ -186,7 +186,7 @@ export default function App() {
                 type="text"
                 placeholder="Enter your general idea"
               />
-              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <div className="grid gap-1 pt-1">
                   <Label>Frameworks</Label>
                   <SelectFrameworks />
