@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,14 +19,18 @@ import {
   setStyle,
   setTemperature,
   useConfigStore,
+  toggleRightbarView,
 } from "@/stores/config-store";
 import { SelectFrameworks } from "@/components/select-frameworks";
 import { SelectTone } from "@/components/select-tone";
+import { Footer } from "@/components/footer";
 import { cn } from "@/lib/utils";
 import { PlusCircle } from "lucide-react";
 import { Transition } from "@headlessui/react";
+import useViewportHeight from "@/hooks/useViewportHeight";
 
 export default function Home() {
+  useViewportHeight();
   const { titles, activeId, apikey, temperature, model, rightbarView, data } =
     useConfigStore((state) => ({
       ...state,
@@ -114,10 +118,24 @@ export default function Home() {
     setResults(activeId, [resultChat.choices[0].message.content]);
   }, [apikey, data, model, temperature, activeId, isValidForm]);
 
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "\\") {
+        toggleRightbarView();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, []);
+
   return (
-    <div className="min-h-[92dvh]">
+    <div className="max-h-[92dvh]">
       <div className="flex">
-        <div className="w-full max-w-[260px] p-4 space-y-4">
+        <div className="w-full max-w-[16rem] p-4 space-y-4">
           <Button onClick={newIdea} className="w-full justify-between">
             New Idea
             <PlusCircle className="w-4 h-4 mr-l" />
@@ -208,9 +226,10 @@ export default function Home() {
               )}
             </Button>
           </div>
-          <div className="p-4 min-h-[58vh]">
+          <div className="p-4">
             <TableTitle data={data?.results || []} />
           </div>
+          <Footer />
         </div>
         <Transition
           show={rightbarView}
@@ -220,9 +239,9 @@ export default function Home() {
           leave="transition-all duration-300"
           leaveFrom="-mr-0"
           leaveTo="-mr-[250px]"
-          className="bg-white border-l overflow-y-auto max-w-[250px] "
+          className="bg-white border-l overflow-y-auto w-full max-w-[250px]"
         >
-          <div className="w-full p-2 space-y-2">
+          <div className="w-full p-2 space-y-2 sidebar-height">
             {Array.from(titles)
               .reverse()
               .map(([key, value]) => (
