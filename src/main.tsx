@@ -1,7 +1,7 @@
 import "./index.css";
 import { enableMapSet } from "immer";
 import { createRoot } from "react-dom/client";
-import { Routes } from "@generouted/react-router";
+import { Routes } from "@generouted/react-router/lazy";
 enableMapSet();
 
 const root = document.getElementById("root");
