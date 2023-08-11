@@ -3,7 +3,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import toast from "react-hot-toast";
-import { fetchChat } from "@/lib/openai";
+import { fetchChatCompletion } from "@/lib/openai";
 import { SelectModel } from "@/components/select-model";
 import { Slider } from "@/components/ui/slider";
 import { isError } from "@/lib/result";
@@ -74,7 +74,7 @@ export default function Home() {
     const controller = new AbortController();
     setController(controller);
 
-    const resultChat = await fetchChat({
+    const resultChat = await fetchChatCompletion({
       apikey: apikey,
       controller: controller,
       body: {

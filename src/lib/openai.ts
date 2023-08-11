@@ -38,21 +38,50 @@ export type ResponseBody = {
   usage: Usage;
 };
 
-export async function fetchChat(
-  props: ChatProps
-): Promise<Result<ResponseBody>> {
-  const options = {
-    method: "POST",
+const openaiUrl = "https://api.openai.com/v1/chat/completions";
+
+async function request(props: ChatProps) {
+  return fetch(openaiUrl, {
+    signal: props.controller.signal,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${props.apikey}`,
     },
+    method: "POST",
     body: JSON.stringify(props.body),
-    signal: props.controller.signal,
-  };
+  });
+}
 
-  return fetch("https://api.openai.com/v1/chat/completions", options)
+export async function fetchChatCompletion(
+  props: ChatProps
+): Promise<Result<ResponseBody>> {
+  return request(props)
     .then((response) => response.json())
     .then((response) => response)
     .catch((err) => err);
+}
+
+export async function fetchStreamChat(
+  props: ChatProps
+): Promise<Result<ReadableStreamDefaultReader<Uint8Array>>> {
+  const resp = await request(props);
+  try {
+    if (resp.status === 400) {
+      const data = (await resp.json()) as {
+        error: { message: string[]; type: string };
+      };
+      return Error(data.error.type + ": " + data.error.message.join("\n"));
+    }
+    if (resp.status !== 200) {
+      return Error(
+        resp.status + ": " + resp.statusText || `OpenAI ${resp.status} error`
+      );
+    }
+    if (!resp.body) {
+      return Error("Empty response from OpenAI");
+    }
+    return resp.body.getReader();
+  } catch (e: any) {
+    return Error(e.message);
+  }
 }
