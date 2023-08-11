@@ -25,7 +25,6 @@ export function SelectTone({
     "Casual",
     "Informative",
     "Storytelling",
-    "Academic",
     "Confident",
     "Excited",
     "Formal",

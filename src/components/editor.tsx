@@ -2,7 +2,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { AiOutlineBold, AiOutlineItalic } from "react-icons/ai";
 import { BiCodeAlt, BiSolidImageAlt } from "react-icons/bi";
 import { HiArrowLeft, HiArrowRight, HiDownload } from "react-icons/hi";
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export const Editor = ({ content, fileName }: Props) => {
-  // const prev = useRef("");
+  const prev = useRef("");
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -68,13 +68,13 @@ export const Editor = ({ content, fileName }: Props) => {
     return downloadStringAsFile(fileName, content);
   }, [content, fileName]);
 
-  // useEffect(() => {
-  //   if (editor && content) {
-  //     const diff = content.slice(prev.current.length);
-  //     prev.current = content;
-  //     editor.chain().focus().insertContent(diff).run();
-  //   }
-  // }, [editor, content]);
+  useEffect(() => {
+    if (editor && content) {
+      const diff = content.slice(prev.current.length);
+      prev.current = content;
+      editor.chain().insertContent(diff).run();
+    }
+  }, [editor, content]);
 
   return (
     <div>
@@ -127,7 +127,7 @@ export const Editor = ({ content, fileName }: Props) => {
             </div>
           </div>
         </div>
-        <div className="p-2">
+        <div className="p-4">
           <EditorContent
             editor={editor}
             className="focus:outline-none active:outline-none"
