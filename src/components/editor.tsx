@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { AiOutlineBold, AiOutlineItalic } from "react-icons/ai";
 import { BiCodeAlt, BiSolidImageAlt } from "react-icons/bi";
 import { HiArrowLeft, HiArrowRight, HiDownload } from "react-icons/hi";
+import { EraserIcon } from "lucide-react";
 
 type Props = {
   content: string;
@@ -48,6 +49,10 @@ export const Editor = ({ content, fileName }: Props) => {
     if (url) {
       editor?.chain().focus().setImage({ src: url }).run();
     }
+  }, [editor]);
+
+  const handleEraseContent = useCallback(() => {
+    editor?.chain().focus().clearContent().run();
   }, [editor]);
 
   const handleDownloadFile = useCallback(() => {
@@ -104,6 +109,12 @@ export const Editor = ({ content, fileName }: Props) => {
               onClick={handleToggleCode}
             >
               <BiCodeAlt />
+            </button>
+            <button
+              className="p-2 hover:bg-gray-200 rounded-md"
+              onClick={handleEraseContent}
+            >
+              <EraserIcon className="w-4 h-4" />
             </button>
             <p className="inline-block shrink-0 bg-gray-400 w-[1.5px] mx-2 h-4"></p>
             <button

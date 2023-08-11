@@ -10,6 +10,7 @@ import { toast } from "react-hot-toast";
 
 export default function Outline() {
   const params = useQueryParams();
+  const [title, setTitle] = useState(params.get("title") || "");
   const { apikey, model, temperature } = useConfigStore();
   const [controller, setController] = useState<AbortController | null>(null);
   const [data, setData] = useState("");
@@ -46,7 +47,7 @@ export default function Outline() {
             // },
             {
               role: "user",
-              content: params.get("title") || "",
+              content: title,
             },
           ],
         },
@@ -67,7 +68,7 @@ export default function Outline() {
     } finally {
       setController(null);
     }
-  }, [apikey, model, params, temperature]);
+  }, [apikey, model, temperature, title]);
 
   const handleSubmitMessage = useCallback(async () => {
     if (controller !== null) {
@@ -88,7 +89,8 @@ export default function Outline() {
             name="idea"
             placeholder="Type a message"
             id="message"
-            defaultValue={params.get("title") || ""}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
         </div>
         <div className="py-4">
