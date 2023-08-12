@@ -80,11 +80,13 @@ export default function Outline() {
   }, [abortChat, submitMessage, controller]);
 
   return (
-    <div className="px-8">
-      <h1 className="font-bold text-5xl p-8">Generate outline</h1>
-      <div className="container mx-auto min-h-[93dvh]">
-        <div className="space-y-2">
-          <Label htmlFor="message">What is the outline about?</Label>
+    <div className="container mx-auto min-h-[93dvh]">
+      <h1 className="col-start-1 row-start-2 mt-4 max-w-[36rem] text-4xl font-extrabold tracking-tight text-slate-900 sm:text-7xl xl:max-w-[43.5rem]">
+        Generate outline
+      </h1>
+      <div className="py-2">
+        <Label htmlFor="message">What is the outline about?</Label>
+        <div className="flex py-4 gap-2">
           <Input
             name="idea"
             placeholder="Type a message"
@@ -92,15 +94,13 @@ export default function Outline() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-        </div>
-        <div className="py-4">
           <Button onClick={handleSubmitMessage}>
             {controller !== null ? "Stop..." : "Generate"}
           </Button>
         </div>
-        <div className="py-8">
-          <Editor content={data} fileName="outline.txt" />
-        </div>
+      </div>
+      <div className="py-8">
+        <Editor content={data} fileName="outline.txt" />
       </div>
     </div>
   );

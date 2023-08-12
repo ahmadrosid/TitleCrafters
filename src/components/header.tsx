@@ -28,6 +28,12 @@ export function Header() {
                 Outline
               </Button>
             </Link>
+
+            <Link to="/research">
+              <Button size="sm" variant="ghost">
+                Research
+              </Button>
+            </Link>
           </nav>
         </div>
 
