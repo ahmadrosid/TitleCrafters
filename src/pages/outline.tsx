@@ -1,4 +1,5 @@
 import { Editor } from "@/components/editor";
+import { SelectFrameworks } from "@/components/select-frameworks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQueryParams } from "@/hooks/useQueryParams";
@@ -19,6 +20,11 @@ export default function Outline() {
   }, [controller]);
 
   const submitMessage = useCallback(async () => {
+    if (title === "") {
+      toast.error("Please enter your title");
+      return;
+    }
+
     try {
       console.log("Start chat");
       const controller = new AbortController();
@@ -52,7 +58,6 @@ export default function Outline() {
           ],
         },
       });
-      console.log("Succes connect");
       if (resultChat instanceof Error) {
         console.log(resultChat);
         toast.error(resultChat.message);
@@ -80,13 +85,13 @@ export default function Outline() {
   }, [abortChat, submitMessage, controller]);
 
   return (
-    <div className="container mx-auto min-h-[93dvh]">
+    <div className="w-full px-4">
       <h1 className="col-start-1 row-start-2 mt-4 max-w-[36rem] text-4xl font-extrabold tracking-tight text-slate-900 sm:text-7xl xl:max-w-[43.5rem]">
         Generate outline
       </h1>
       <div className="py-2">
         <Label htmlFor="message">What is the outline about?</Label>
-        <div className="flex py-4 gap-2">
+        <div className="grid py-4 gap-2">
           <Input
             name="idea"
             placeholder="Type a message"
@@ -94,9 +99,12 @@ export default function Outline() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <Button onClick={handleSubmitMessage}>
-            {controller !== null ? "Stop..." : "Generate"}
-          </Button>
+          <SelectFrameworks />
+          <div>
+            <Button onClick={handleSubmitMessage}>
+              {controller !== null ? "Stop..." : "Generate"}
+            </Button>
+          </div>
         </div>
       </div>
       <div className="py-8">

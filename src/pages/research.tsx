@@ -1,6 +1,6 @@
 export default function Research() {
   return (
-    <div className="container mx-auto min-h-[93dvh]">
+    <div className="px-4">
       <h1 className="col-start-1 row-start-2 mt-4 max-w-[36rem] text-4xl font-extrabold tracking-tight text-slate-900 sm:text-7xl xl:max-w-[43.5rem]">
         Research
       </h1>
