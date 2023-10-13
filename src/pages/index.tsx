@@ -4,20 +4,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import toast from "react-hot-toast";
 import { fetchChatCompletion } from "@/lib/openai";
-import { SelectModel } from "@/components/select-model";
-import { Slider } from "@/components/ui/slider";
 import { isError } from "@/lib/result";
 import { Loader2, Trash2Icon } from "lucide-react";
 import { TableTitle } from "@/components/table-title";
 import {
-  newIdea,
   removeTitle,
   setActiveId,
-  setApikey,
   setIdea,
   setResults,
   setStyle,
-  setTemperature,
   useConfigStore,
   toggleRightbarView,
 } from "@/stores/config-store";
@@ -25,7 +20,6 @@ import { SelectFrameworks } from "@/components/select-frameworks";
 import { SelectTone } from "@/components/select-tone";
 import { Footer } from "@/components/footer";
 import { cn } from "@/lib/utils";
-import { PlusCircle } from "lucide-react";
 import { Transition } from "@headlessui/react";
 import useViewportHeight from "@/hooks/useViewportHeight";
 
@@ -135,40 +129,6 @@ export default function Home() {
   return (
     <div className="max-h-[92dvh]">
       <div className="flex">
-        <div className="w-full max-w-[16rem] p-4 space-y-4">
-          <Button onClick={newIdea} className="w-full justify-between">
-            New Idea
-            <PlusCircle className="w-4 h-4 mr-l" />
-          </Button>
-          <div className="space-y-1">
-            <Label>OpenAI apikey</Label>
-            <Input
-              defaultValue={apikey}
-              onChange={(e) => setApikey(e.target.value)}
-              type="password"
-              placeholder="Enter OpenAI apikey"
-            />
-          </div>
-          <div className="space-y-1">
-            <Label>Model</Label>
-            <SelectModel />
-          </div>
-          <div className="space-y-1">
-            <Label className="justify-between flex items-center pb-2">
-              <span>Temperature</span>
-              <span>{temperature}</span>
-            </Label>
-            <Slider
-              id="temperature"
-              max={1}
-              defaultValue={[temperature]}
-              step={0.1}
-              onValueChange={([val]) => setTemperature(val)}
-              className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
-              aria-label="Temperature"
-            />
-          </div>
-        </div>
         <div className="flex-1 overflow-y-auto max-h-[92dvh]">
           <div className="p-4 space-y-2">
             <Label>What is your idea?</Label>
