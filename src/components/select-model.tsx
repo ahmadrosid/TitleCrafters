@@ -24,6 +24,7 @@ export function SelectModel() {
           <SelectLabel>Model</SelectLabel>
           <SelectItem value="gpt-4">gpt-4</SelectItem>
           <SelectItem value="gpt-3.5-turbo">gpt-3.5-turbo</SelectItem>
+          <SelectItem value="gpt-3.5-turbo-16k">gpt-3.5-turbo-16k</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>

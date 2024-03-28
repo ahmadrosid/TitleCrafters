@@ -23,6 +23,7 @@ import {
 } from "@/stores/config-store";
 import { SelectFrameworks } from "@/components/select-frameworks";
 import { SelectTone } from "@/components/select-tone";
+import { Textarea } from "@/components/ui/textarea";
 import { Footer } from "@/components/footer";
 import { cn } from "@/lib/utils";
 import { PlusCircle } from "lucide-react";
@@ -172,17 +173,18 @@ export default function Home() {
         <div className="flex-1 overflow-y-auto max-h-[92dvh]">
           <div className="p-4 space-y-2">
             <Label>What is your idea?</Label>
-            <Input
-              value={data?.idea.title}
+            <Textarea
               onChange={(e) =>
                 setIdea(activeId, {
                   language: data?.idea.language || "",
                   title: e.target.value,
                 })
               }
-              type="text"
               placeholder="Enter your general idea"
-            />
+              className="bg-white"
+            >
+              {data?.idea.title}
+            </Textarea>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <div className="grid gap-1 pt-1">
                 <Label>Frameworks</Label>
